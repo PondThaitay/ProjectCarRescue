@@ -131,7 +131,7 @@ public class MainActivity extends Activity {
                     }
                 });
 
-                AvailableBluetooth();
+                //AvailableBluetooth();
 
                 if (!bt.isBluetoothAvailable()) {
                     Toast.makeText(getApplicationContext()
@@ -150,8 +150,9 @@ public class MainActivity extends Activity {
                         Toast.makeText(context
                                 , "Connected to " + name + "\n" + address
                                 , Toast.LENGTH_SHORT).show();
-                        tvSelectBluttoth.setText("ตัดการเชื่อมต่อ");
+                        tvSelectBluttoth.setText("Bluetooth : ตัดการเชื่อมต่อ");
                         btnBluetooth.setBackgroundResource(R.drawable.ic_action_bluetooth_on);
+                        AvailableBluetooth();
                     }
 
                     public void onDeviceDisconnected() {
@@ -232,7 +233,7 @@ public class MainActivity extends Activity {
 
                         int direction = js.get8Direction();
                         if (direction == JoyStickClass.STICK_UP) {
-                            //wifi.WifiControl(IP_Address, Port, "UW");
+                            wifi.WifiControl(IP_Address, Port, "UW");
                             textView5.setText("ทิศทาง : เดินหน้า");
                             Log.i("Control by Wifi", "OK");
                         } else if (direction == JoyStickClass.STICK_UPRIGHT) {
@@ -260,7 +261,7 @@ public class MainActivity extends Activity {
                             textView5.setText("ทิศทาง  : หยุด");
                         }
                     } else if (arg1.getAction() == MotionEvent.ACTION_UP) {
-                        wifi.WifiControl(IP_Address, Port, "US");
+                        wifi.WifiControl(IP_Address, Port, "S");
                         textView5.setText("ทิศทาง  : หยุด");
                     }
                     return true;
