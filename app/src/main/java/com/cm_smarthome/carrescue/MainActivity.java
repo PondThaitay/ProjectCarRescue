@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.webkit.WebView;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,14 +36,16 @@ public class MainActivity extends Activity {
 
     private Button btnBluetooth;
     private Button btnWifi;
+    private Button btnUp;
+    private Button btnDown;
+    private Button btnLeft;
+    private Button btnRight;
 
     private TextView tvStatusVDO;
     private TextView tvSelectBluttoth;
     private TextView tvWifi;
 
-    RelativeLayout layout_joystick;
     TextView textView5;
-    JoyStickClass js;
 
     BluetoothSPP bt;
 
@@ -81,7 +82,10 @@ public class MainActivity extends Activity {
         tvWifi = (TextView) findViewById(R.id.tvWifi);
         tvWifi.setPaintFlags(tvWifi.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
-        layout_joystick = (RelativeLayout) findViewById(R.id.layout_joystick);
+        btnUp = (Button) findViewById(R.id.btnUp);
+        btnDown = (Button) findViewById(R.id.btnDown);
+        btnLeft = (Button) findViewById(R.id.btnLeft);
+        btnRight = (Button) findViewById(R.id.btnRight);
 
         if (isInternetPresent) {
             webView.getSettings().setJavaScriptEnabled(true);
@@ -96,6 +100,7 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 if (isInternetPresent) {
                     btnWifi.setBackgroundResource(R.drawable.ic_action_wifi_on);
+                    Toast.makeText(context, "เชื่อมต่อกับเครือข่ายสำเร็จ", Toast.LENGTH_SHORT).show();
                     tvWifi.setVisibility(View.VISIBLE);
                     AvailableWifi(true);
                 } else {
@@ -108,6 +113,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 btnWifi.setBackgroundResource(R.drawable.ic_action_wifi);
+                Toast.makeText(context, "ตัดการเชื่อมต่อสำเร็จ", Toast.LENGTH_SHORT).show();
                 AvailableWifi(false);
                 tvWifi.setVisibility(View.GONE);
             }
@@ -131,8 +137,6 @@ public class MainActivity extends Activity {
                     }
                 });
 
-                //AvailableBluetooth();
-
                 if (!bt.isBluetoothAvailable()) {
                     Toast.makeText(getApplicationContext()
                             , "Bluetooth is not available"
@@ -148,7 +152,7 @@ public class MainActivity extends Activity {
                 bt.setBluetoothConnectionListener(new BluetoothSPP.BluetoothConnectionListener() {
                     public void onDeviceConnected(String name, String address) {
                         Toast.makeText(context
-                                , "Connected to " + name + "\n" + address
+                                , "เชื่อมต่อกับอุปกรณ์ : " + name + "\n" + address
                                 , Toast.LENGTH_SHORT).show();
                         tvSelectBluttoth.setText("Bluetooth : ตัดการเชื่อมต่อ");
                         btnBluetooth.setBackgroundResource(R.drawable.ic_action_bluetooth_on);
@@ -157,148 +161,186 @@ public class MainActivity extends Activity {
 
                     public void onDeviceDisconnected() {
                         Toast.makeText(context
-                                , "DisConnect", Toast.LENGTH_SHORT).show();
+                                , "ตัดการเชื่อมต่อสำเร็จ", Toast.LENGTH_SHORT).show();
                         tvSelectBluttoth.setText("เลือกอุปกรณ์ Bluetooth");
+                        tvSelectBluttoth.setVisibility(View.GONE);
                         btnBluetooth.setBackgroundResource(R.drawable.ic_action_bluetooth);
                     }
 
                     public void onDeviceConnectionFailed() {
                         Toast.makeText(context
-                                , "Unable To Connect", Toast.LENGTH_SHORT).show();
+                                , "ไม่สามารถเชื่อมต่อกับอุปกรณ์ได้", Toast.LENGTH_SHORT).show();
                         btnBluetooth.setBackgroundResource(R.drawable.ic_action_bluetooth);
                     }
                 });
             }
         });
-
-        js = new JoyStickClass(getApplicationContext()
-                , layout_joystick, R.drawable.joystick);
-        js.setStickSize(80, 80);
-        js.setLayoutSize(300, 300);
-        js.setOffset(50);
-        js.setMinimumDistance(50);
     }
 
     public void AvailableBluetooth() {
-        layout_joystick.setOnTouchListener(new OnTouchListener() {
-            public boolean onTouch(View arg0, MotionEvent arg1) {
-                js.drawStick(arg1);
-                if (arg1.getAction() == MotionEvent.ACTION_DOWN
-                        || arg1.getAction() == MotionEvent.ACTION_MOVE) {
 
-                    int direction = js.get8Direction();
-                    if (direction == JoyStickClass.STICK_UP) {
-                        bt.send("U", true);
-                        textView5.setText("ทิศทาง : เดินหน้า");
-                    } else if (direction == JoyStickClass.STICK_UPRIGHT) {
-                        bt.send("UR", true);
-                        textView5.setText("ทิศทาง  : เดินหน้าเลี้ยวขวา");
-                    } else if (direction == JoyStickClass.STICK_RIGHT) {
-                        bt.send("R", true);
-                        textView5.setText("ทิศทาง  : เลี้ยวขวา");
-                    } else if (direction == JoyStickClass.STICK_DOWNRIGHT) {
-                        bt.send("DR", true);
-                        textView5.setText("ทิศทาง  : ถอยหลังเลี้ยวขวา");
-                    } else if (direction == JoyStickClass.STICK_DOWN) {
-                        bt.send("D", true);
-                        textView5.setText("ทิศทาง  : ถอยหลัง");
-                    } else if (direction == JoyStickClass.STICK_DOWNLEFT) {
-                        bt.send("DL", true);
-                        textView5.setText("ทิศทาง  : ถอยหลังเลี้ยวซ้าย");
-                    } else if (direction == JoyStickClass.STICK_LEFT) {
-                        bt.send("L", true);
-                        textView5.setText("ทิศทาง  : เลี้ยวซ้าย");
-                    } else if (direction == JoyStickClass.STICK_UPLEFT) {
-                        bt.send("UL", true);
-                        textView5.setText("ทิศทาง  : เดินหน้าเลี้ยงซ้าย");
-                    } else if (direction == JoyStickClass.STICK_NONE) {
-                        textView5.setText("ทิศทาง  : หยุด");
-                    }
-                } else if (arg1.getAction() == MotionEvent.ACTION_UP) {
-                    textView5.setText("ทิศทาง  : หยุด");
+        btnUp.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    bt.send("U", true);
+                    textView5.setText("ทิศทาง : เดินหน้า");
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     bt.send("S", true);
+                    textView5.setText("ทิศทาง  : หยุด");
                 }
-                return true;
+                return false;
+            }
+        });
+
+        btnDown.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    bt.send("D", true);
+                    textView5.setText("ทิศทาง  : ถอยหลัง");
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    bt.send("S", true);
+                    textView5.setText("ทิศทาง  : หยุด");
+                }
+                return false;
+            }
+        });
+
+        btnRight.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    bt.send("R", true);
+                    textView5.setText("ทิศทาง  : เลี้ยวขวา");
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    bt.send("S", true);
+                    textView5.setText("ทิศทาง  : หยุด");
+                }
+                return false;
+            }
+        });
+
+        btnLeft.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    bt.send("L", true);
+                    textView5.setText("ทิศทาง  : เลี้ยวซ้าย");
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    bt.send("S", true);
+                    textView5.setText("ทิศทาง  : หยุด");
+                }
+                return false;
             }
         });
     }
 
     public void AvailableWifi(boolean flag) {
         if (flag == true) {
-            layout_joystick.setOnTouchListener(new OnTouchListener() {
-                public boolean onTouch(View arg0, MotionEvent arg1) {
-                    js.drawStick(arg1);
-                    if (arg1.getAction() == MotionEvent.ACTION_DOWN
-                            || arg1.getAction() == MotionEvent.ACTION_MOVE) {
-
-                        int direction = js.get8Direction();
-                        if (direction == JoyStickClass.STICK_UP) {
-                            wifi.WifiControl(IP_Address, Port, "UW");
-                            textView5.setText("ทิศทาง : เดินหน้า");
-                            Log.i("Control by Wifi", "OK");
-                        } else if (direction == JoyStickClass.STICK_UPRIGHT) {
-                            wifi.WifiControl(IP_Address, Port, "URW");
-                            textView5.setText("ทิศทาง  : เดินหน้าเลี้ยวขวา");
-                        } else if (direction == JoyStickClass.STICK_RIGHT) {
-                            wifi.WifiControl(IP_Address, Port, "RW");
-                            textView5.setText("ทิศทาง  : เลี้ยวขวา");
-                        } else if (direction == JoyStickClass.STICK_DOWNRIGHT) {
-                            wifi.WifiControl(IP_Address, Port, "DRW");
-                            textView5.setText("ทิศทาง  : ถอยหลังเลี้ยวขวา");
-                        } else if (direction == JoyStickClass.STICK_DOWN) {
-                            wifi.WifiControl(IP_Address, Port, "DW");
-                            textView5.setText("ทิศทาง  : ถอยหลัง");
-                        } else if (direction == JoyStickClass.STICK_DOWNLEFT) {
-                            wifi.WifiControl(IP_Address, Port, "DLW");
-                            textView5.setText("ทิศทาง  : ถอยหลังเลี้ยวซ้าย");
-                        } else if (direction == JoyStickClass.STICK_LEFT) {
-                            wifi.WifiControl(IP_Address, Port, "LW");
-                            textView5.setText("ทิศทาง  : เลี้ยวซ้าย");
-                        } else if (direction == JoyStickClass.STICK_UPLEFT) {
-                            wifi.WifiControl(IP_Address, Port, "ULW");
-                            textView5.setText("ทิศทาง  : เดินหน้าเลี้ยงซ้าย");
-                        } else if (direction == JoyStickClass.STICK_NONE) {
-                            textView5.setText("ทิศทาง  : หยุด");
-                        }
-                    } else if (arg1.getAction() == MotionEvent.ACTION_UP) {
-                        wifi.WifiControl(IP_Address, Port, "S");
+            btnUp.setOnTouchListener(new OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        wifi.WifiControl(IP_Address, Port, "UW");
+                        textView5.setText("ทิศทาง : เดินหน้า");
+                        Log.i("Control by Wifi", "OK");
+                    } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                        wifi.WifiControl(IP_Address, Port, "SW");
                         textView5.setText("ทิศทาง  : หยุด");
                     }
-                    return true;
+                    return false;
                 }
             });
-        } else {
-            layout_joystick.setOnTouchListener(new OnTouchListener() {
-                public boolean onTouch(View arg0, MotionEvent arg1) {
-                    js.drawStick(arg1);
-                    if (arg1.getAction() == MotionEvent.ACTION_DOWN
-                            || arg1.getAction() == MotionEvent.ACTION_MOVE) {
 
-                        int direction = js.get8Direction();
-                        if (direction == JoyStickClass.STICK_UP) {
-                            textView5.setText("ทิศทาง : เดินหน้า");
-                            Log.i("Control by Wifi", "NO");
-                        } else if (direction == JoyStickClass.STICK_UPRIGHT) {
-                            textView5.setText("ทิศทาง  : เดินหน้าเลี้ยวขวา");
-                        } else if (direction == JoyStickClass.STICK_RIGHT) {
-                            textView5.setText("ทิศทาง  : เลี้ยวขวา");
-                        } else if (direction == JoyStickClass.STICK_DOWNRIGHT) {
-                            textView5.setText("ทิศทาง  : ถอยหลังเลี้ยวขวา");
-                        } else if (direction == JoyStickClass.STICK_DOWN) {
-                            textView5.setText("ทิศทาง  : ถอยหลัง");
-                        } else if (direction == JoyStickClass.STICK_DOWNLEFT) {
-                            textView5.setText("ทิศทาง  : ถอยหลังเลี้ยวซ้าย");
-                        } else if (direction == JoyStickClass.STICK_LEFT) {
-                            textView5.setText("ทิศทาง  : เลี้ยวซ้าย");
-                        } else if (direction == JoyStickClass.STICK_UPLEFT) {
-                            textView5.setText("ทิศทาง  : เดินหน้าเลี้ยงซ้าย");
-                        } else if (direction == JoyStickClass.STICK_NONE) {
-                            textView5.setText("ทิศทาง  : หยุด");
-                        }
-                    } else if (arg1.getAction() == MotionEvent.ACTION_UP) {
+            btnDown.setOnTouchListener(new OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        wifi.WifiControl(IP_Address, Port, "DW");
+                        textView5.setText("ทิศทาง  : ถอยหลัง");
+                    } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                        wifi.WifiControl(IP_Address, Port, "SW");
                         textView5.setText("ทิศทาง  : หยุด");
                     }
-                    return true;
+                    return false;
+                }
+            });
+
+            btnRight.setOnTouchListener(new OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        wifi.WifiControl(IP_Address, Port, "RW");
+                        textView5.setText("ทิศทาง  : เลี้ยวขวา");
+                    } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                        wifi.WifiControl(IP_Address, Port, "SW");
+                        textView5.setText("ทิศทาง  : หยุด");
+                    }
+                    return false;
+                }
+            });
+
+            btnLeft.setOnTouchListener(new OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        wifi.WifiControl(IP_Address, Port, "LW");
+                        textView5.setText("ทิศทาง  : เลี้ยวซ้าย");
+                    } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                        wifi.WifiControl(IP_Address, Port, "SW");
+                        textView5.setText("ทิศทาง  : หยุด");
+                    }
+                    return false;
+                }
+            });
+
+        } else {
+            btnUp.setOnTouchListener(new OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        textView5.setText("ทิศทาง : เดินหน้า");
+                    } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                        textView5.setText("ทิศทาง  : หยุด");
+                    }
+                    return false;
+                }
+            });
+
+            btnDown.setOnTouchListener(new OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        textView5.setText("ทิศทาง  : ถอยหลัง");
+                    } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                        textView5.setText("ทิศทาง  : หยุด");
+                    }
+                    return false;
+                }
+            });
+
+            btnRight.setOnTouchListener(new OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        textView5.setText("ทิศทาง  : เลี้ยวขวา");
+                    } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                        textView5.setText("ทิศทาง  : หยุด");
+                    }
+                    return false;
+                }
+            });
+
+            btnLeft.setOnTouchListener(new OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        textView5.setText("ทิศทาง  : เลี้ยวขวา");
+                    } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                        textView5.setText("ทิศทาง  : หยุด");
+                    }
+                    return false;
                 }
             });
         }
@@ -308,7 +350,7 @@ public class MainActivity extends Activity {
         AlertDialog alertDialog = new AlertDialog.Builder(context).create();
         alertDialog.setTitle(title);
         alertDialog.setMessage(message);
-        alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
+        alertDialog.setButton("ตกลง", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
             }
         });
