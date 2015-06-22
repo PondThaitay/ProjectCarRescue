@@ -11,7 +11,7 @@ import java.net.Socket;
 public class Wifi {
 
     private Socket socket = null;
-    private final String DEBUG_TAG = "Home Energy Management";
+    private final String DEBUG_TAG = "Car Reuse";
 
     public void WifiControl(String ip, String port, String msg) {
         String message = msg;

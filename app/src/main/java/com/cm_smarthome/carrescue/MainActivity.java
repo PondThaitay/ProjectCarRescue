@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.app.Activity;
 import android.os.StrictMode;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -49,7 +50,7 @@ public class MainActivity extends Activity {
 
     BluetoothSPP bt;
 
-    private static String IP_Address = "192.168.2.115";
+    private static String IP_Address = "192.168.4.1";
     private static String Port = "8080";
 
     public void onCreate(Bundle savedInstanceState) {
@@ -67,7 +68,7 @@ public class MainActivity extends Activity {
 
         isInternetPresent = cd.isConnectingToInternet();
 
-        String url = "http://192.168.2.114:8080/jsfs.html";
+        String url = "http://192.168.4.101:8080/jsfs.html";
         webView = (WebView) findViewById(R.id.myWebView);
 
         btnBluetooth = (Button) findViewById(R.id.btnBluetooth);
@@ -91,6 +92,12 @@ public class MainActivity extends Activity {
             webView.getSettings().setJavaScriptEnabled(true);
             webView.loadUrl(url);
             tvStatusVDO.setText("มีการเชื่อมต่อกับสัญญาณภาพ");
+            webView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return true;
+                }
+            });
         } else {
             showAlertDialog(context, "เกิดข้อผิดพลาด", "กรุณาเชื่อต่อกับเครือข่าย เพื่อเชื่อมต่อสัญญาณภาพ", false);
         }
@@ -98,14 +105,13 @@ public class MainActivity extends Activity {
         btnWifi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isInternetPresent) {
-                    btnWifi.setBackgroundResource(R.drawable.ic_action_wifi_on);
-                    Toast.makeText(context, "เชื่อมต่อกับเครือข่ายสำเร็จ", Toast.LENGTH_SHORT).show();
-                    tvWifi.setVisibility(View.VISIBLE);
-                    AvailableWifi(true);
-                } else {
-                    showAlertDialog(context, "เกิดข้อผิดพลาด", "กรุณาเชื่อต่อกับเครือข่าย", false);
-                }
+
+                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                btnWifi.setBackgroundResource(R.drawable.ic_action_wifi_on);
+                Toast.makeText(context, "กรุณาเชื่อมต่อกับเครือข่าย", Toast.LENGTH_SHORT).show();
+                tvWifi.setVisibility(View.VISIBLE);
+                AvailableWifi(true);
+
             }
         });
 
@@ -242,11 +248,11 @@ public class MainActivity extends Activity {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        wifi.WifiControl(IP_Address, Port, "UW");
+                        wifi.WifiControl(IP_Address, Port, "LED ON");
                         textView5.setText("ทิศทาง : เดินหน้า");
                         Log.i("Control by Wifi", "OK");
                     } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                        wifi.WifiControl(IP_Address, Port, "SW");
+                        wifi.WifiControl(IP_Address, Port, "LED OFF");
                         textView5.setText("ทิศทาง  : หยุด");
                     }
                     return false;
@@ -257,10 +263,10 @@ public class MainActivity extends Activity {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        wifi.WifiControl(IP_Address, Port, "DW");
+                        wifi.WifiControl(IP_Address, Port, "LED ON");
                         textView5.setText("ทิศทาง  : ถอยหลัง");
                     } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                        wifi.WifiControl(IP_Address, Port, "SW");
+                        wifi.WifiControl(IP_Address, Port, "LED OFF");
                         textView5.setText("ทิศทาง  : หยุด");
                     }
                     return false;
@@ -271,10 +277,10 @@ public class MainActivity extends Activity {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        wifi.WifiControl(IP_Address, Port, "RW");
+                        wifi.WifiControl(IP_Address, Port, "LED ON");
                         textView5.setText("ทิศทาง  : เลี้ยวขวา");
                     } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                        wifi.WifiControl(IP_Address, Port, "SW");
+                        wifi.WifiControl(IP_Address, Port, "LED OFF");
                         textView5.setText("ทิศทาง  : หยุด");
                     }
                     return false;
@@ -285,10 +291,10 @@ public class MainActivity extends Activity {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        wifi.WifiControl(IP_Address, Port, "LW");
+                        wifi.WifiControl(IP_Address, Port, "LED ON");
                         textView5.setText("ทิศทาง  : เลี้ยวซ้าย");
                     } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                        wifi.WifiControl(IP_Address, Port, "SW");
+                        wifi.WifiControl(IP_Address, Port, "LED OFF");
                         textView5.setText("ทิศทาง  : หยุด");
                     }
                     return false;
@@ -391,4 +397,3 @@ public class MainActivity extends Activity {
         }
     }
 }
-
